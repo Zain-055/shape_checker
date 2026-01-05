@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shape_Checker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0ea5e9">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://placehold.co/180x180/png?text=BMI">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="canonical" href="https://shapecheck.netlify.app/">
+  <meta name="description" content="Fast, accurate BMI Calculator with health tips, unit conversions, and history.">
+  <meta name="robots" content="index,follow">
+  <meta property="og:title" content="BMI Calculator">
+  <meta property="og:description" content="Calculate your BMI with helpful tips and category indicators.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://shapecheck.netlify.app/">
+  <meta property="og:image" content="https://placehold.co/1200x630/png?text=BMI">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="BMI Calculator">
+  <meta name="twitter:description" content="Calculate your BMI with helpful tips and category indicators.">
+  <meta name="twitter:image" content="https://placehold.co/1200x630/png?text=BMI">
+  <meta name="google-site-verification" content="JiprbkZWYoej2R0cQc1PRFe9iYVXnM-plNITHl-Pc0E" />
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XZSQZR22HN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-XZSQZR22HN');
+</script>
+<body>
+  <header class="app-header">
+    <h1>Shape_Checker</h1>
+    <p class="subtitle">Calculate your Body Mass Index and get health tips</p>
+    <button id="a2hs-btn" class="btn install-btn" aria-label="Add to Home Screen" hidden>Add to Home Screen</button>
+  </header>
+
+  <main class="container">
+    <section class="card" aria-labelledby="inputs-title">
+      <h2 id="inputs-title">Inputs</h2>
+      <form id="bmi-form" class="grid" novalidate>
+        <div class="field">
+          <label for="height-value">Height</label>
+          <div class="input-group">
+            <input id="height-value" name="height-value" type="number" inputmode="decimal" step="0.01" min="0" aria-describedby="height-help" required>
+            <select id="height-unit" name="height-unit" aria-label="Height unit">
+              <option value="m">m</option>
+              <option value="cm">cm</option>
+            </select>
+          </div>
+          <div id="height-help" class="help">Enter height in meters or centimeters</div>
+        </div>
+
+        <div class="field">
+          <label for="weight-value">Weight</label>
+          <div class="input-group">
+            <input id="weight-value" name="weight-value" type="number" inputmode="decimal" step="0.1" min="0" aria-describedby="weight-help" required>
+            <select id="weight-unit" name="weight-unit" aria-label="Weight unit">
+              <option value="kg">kg</option>
+              <option value="lbs">lbs</option>
+            </select>
+          </div>
+          <div id="weight-help" class="help">Enter weight in kilograms or pounds</div>
+        </div>
+
+        <div class="actions">
+          <button type="submit" id="calculate-btn" class="btn primary">Calculate</button>
+          <button type="button" id="reset-btn" class="btn outline">Reset</button>
+        </div>
+      </form>
+      <div id="error-area" class="error-area" role="alert" aria-live="assertive"></div>
+    </section>
+
+    <section class="card" aria-labelledby="results-title">
+      <h2 id="results-title">Results</h2>
+      <div class="results">
+        <div class="result-value" aria-live="polite" aria-atomic="true">
+          <span class="label">BMI</span>
+          <span id="bmi-output" class="value">--</span>
+        </div>
+        <div class="result-category">
+          <span class="label">Category</span>
+          <span id="bmi-category" class="badge">--</span>
+        </div>
+      </div>
+      <div class="indicator" aria-hidden="true">
+        <div class="segment underweight">Underweight</div>
+        <div class="segment normal">Normal</div>
+        <div class="segment overweight">Overweight</div>
+        <div class="segment obese">Obese</div>
+      </div>
+      <div id="health-tips" class="tips" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="card" aria-labelledby="history-title">
+      <h2 id="history-title">History</h2>
+      <div id="history-empty" class="help">No calculations yet</div>
+      <table class="history" aria-describedby="history-desc">
+        <caption id="history-desc">Stored locally on this device</caption>
+        <thead>
+          <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Height</th>
+            <th scope="col">Weight</th>
+            <th scope="col">BMI</th>
+            <th scope="col">Category</th>
+          </tr>
+        </thead>
+        <tbody id="history-body"></tbody>
+      </table>
+    </section>
+    <section id="a2hs-instructions" class="modal" aria-hidden="true" role="dialog" aria-labelledby="a2hs-title" aria-describedby="a2hs-desc">
+      <div class="modal-content">
+        <h3 id="a2hs-title">Add to Home Screen</h3>
+        <p id="a2hs-desc">On iOS Safari, tap the Share icon, then choose "Add to Home Screen".</p>
+        <div class="modal-actions">
+          <button id="a2hs-dismiss" class="btn">Got it</button>
+        </div>
+      </div>
+    </section>
+    <div id="toast" class="toast" aria-live="polite" aria-atomic="true"></div>
+  </main>
+
+  <footer class="app-footer">
+    <small>For informational purposes only. Consult a healthcare professional for personalized advice.</small>
+  </footer>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "BMI Calculator",
+    "url": "https://shapecheck.netlify.app/",
+    "applicationCategory": "HealthApplication",
+    "operatingSystem": "Web",
+    "description": "Fast, accurate BMI Calculator with health tips, unit conversions, and history.",
+    "creator": {
+      "@type": "Organization",
+      "name": "BMI Tools"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is BMI and how is it calculated?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "BMI is Body Mass Index calculated as weight in kilograms divided by height in meters squared."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What are the BMI categories?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Underweight: &lt;18.5, Normal: 18.5–24.9, Overweight: 25–29.9, Obese: ≥30."
+        }
+      }
+    ]
+  }
+  </script>
+  <script src="app.js" defer></script>
+</body>
+</html>
+
